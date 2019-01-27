@@ -1,0 +1,109 @@
+<!DOCTYPE html "utf-8">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="./vue.js"></script>
+    </head>
+    <body>
+        <h2>Text interpolation using {{var}}</h2>
+        <div id="app">
+            {{ message }}
+        </div>
+        <div id="app2">
+            {{ message }}
+
+            <h2>bind element attribute, with v-bind ex: to create a tooltip attr title</h2>
+
+            <span v-bind:title="tooltip">
+                The tooltip will show when hovering this text
+            </span>
+
+            <h2>Conditional with v-if</h2>
+            <div v-if="seen">
+                You can see me because v-if evaluates to true
+            </div>
+            You can't see anything inside&gt; 
+            <span v-if="show">You can't se this text</span>
+            &lt;because show evalutes to false
+
+            <h2>Loops items = ['item1', 'item2', 'item3']</h2>
+            <div v-for="item in items">
+                {{item}}
+            </div>
+            <h3> items as a list</h3>
+            <div v-if="too_much">Too much stuff todo</div>
+            <ol>
+                <span v-for="item in items">
+                    <li>{{item}}</li>
+                </span>
+            </ol>
+
+            <h2>Adding user event with v-on</h2>
+            <p>{{message_2}}</p>
+            <button v-on:click="reverseMessage">Reverse</button>
+
+            <h2>Two way binding with v-model</h2>
+            <div>I'll show what's in the text input: {{twoWayBoundVar}}</div>
+            <input v-model="twoWayBoundVar"/>
+
+            <h2>Components apparently register at a gobal level but are Vue instances</h2>
+            <ol>
+                <todo-item></todo-item>
+            </ol>
+            <h3>Component with a prop which allows to pass data</h3>
+            <ol>
+                <prop-todo-item 
+                    v-for="item in groceryList"
+                    v-bind:tobuy="item"
+                    v-bind:key="item.id"> <!-- not sure why key-->
+                </prop-todo-item>
+            </ol>
+        </div>
+    </body>
+    <script>
+        Vue.component('todo-item', {
+            template: '<li>This is a simple template only component</li>'
+        })
+        Vue.component('prop-todo-item', {
+            // The todo-item component now accepts a
+            // "prop", which is like a custom attribute.
+            // This prop is called todo.
+            props: ['tobuy'],  // tobuy becomes an attribute of prop-todo-item element
+                                // we can v-bind the attribute to a js Vue variable
+            template: '<li>{{ tobuy.text }}</li>'
+        })
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!'
+            }
+        })
+        var app2 = new Vue({
+            el: '#app2',
+            data: {
+                message: 'Hello Vue Second instance!',
+                tooltip: "Tooltip: not sure it's a good idea to create 2 Vue instances in the same html",
+                seen: true,
+                show: false,
+                items: ['item1', 'item2', 'item3'],
+                too_much: false,
+                message_2: 'Will be reversed on click!',
+                twoWayBoundVar: 'Intialized in the js',
+                groceryList: [
+                    { id: 0, text: 'Vegetables' }, 
+                    { id: 1, text: 'Cheese' },
+                    { id: 2, text: 'Whatever else humans are supposed to eat' }
+                ]
+            },
+            methods: {
+                reverseMessage: function () {
+                    this.message_2 = this.message_2.split('').reverse().join('')
+                }
+            }
+        }
+        )
+
+        if(this.app2.data.items.length === 4)
+            this.app2.data.too_much = true;
+    </script>
+</html>
