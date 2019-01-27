@@ -37,20 +37,23 @@
                     <li>{{item}}</li>
                 </span>
             </ol>
+            <button v-on:click="addItems">
+                Add An Item
+            </button>
 
             <h2>Adding user event with v-on</h2>
             <p>{{message_2}}</p>
             <button v-on:click="reverseMessage">Reverse</button>
 
             <h2>Two way binding with v-model</h2>
-            <div>I'll show what's in the text input: {{twoWayBoundVar}}</div>
+            <div>Type in the text box, I'll show what's in the text input: {{twoWayBoundVar}}</div>
             <input v-model="twoWayBoundVar"/>
 
-            <h2>Components apparently register at a gobal level but are Vue instances</h2>
+            <h2>Components (the Vue equivalent of Custom Element of Web Components) apparently register at a gobal level but are Vue instances</h2>
             <ol>
                 <todo-item></todo-item>
             </ol>
-            <h3>Component with a prop which allows to pass data</h3>
+            <h3>Component with a prop which defines an attribute used to pass data</h3>
             <ol>
                 <prop-todo-item 
                     v-for="item in groceryList"
@@ -58,8 +61,39 @@
                     v-bind:key="item.id"> <!-- not sure why key-->
                 </prop-todo-item>
             </ol>
+
+            <h2>Frozen interpolation with v-once</h2>
+            <div>Time is changing {{msg}}</div>
+            <div v-once>Time is frozen {{msg}}</div>
+            <button v-on:click="changeTime">
+                    Change Time
+            </button>
+
+            <h2>Outputing raw html as html with v-html - use HTML interpolation on trusted content and never on user-provided content</h2>
+            <p> raw html: {{rawHtml}}</p>
+            <p> rendered html: <span v-html="rawHtml"> stuff</span></p>
+
+            <h2> Attribute and v-bind. If an attribute value is null it is considered as falsy</h2>
+            <button v-bind:disabled="isButtonDisabled">Button</button>
+
+            <h2>Expression</h2>
+            <p>val + 1: {{val + 1}}</p>
+            <p>{{ message.split('').reverse().join('') }}</p>
+
+            <h2> : Shorthand for v-bind and @ shorthand for v-on</h2>
+            <span>Click me to change my color </span><button :style="buttonColor" @click="changeColor">button</button>
+
+            <h2> Vue Computed properties to replace bloated code</h2>
+            <div id="example">
+                <p>Original message: {{ message }}</p>
+                <p>bloated code: {{ message.split('').reverse().join('') }}</p>
+                <p>Computed reversed message: "{{ reversedMessage }}"</p>
+                <h3>computed properties are cached and only reevaluates when a depency changes</h3>
+                <p>Will never change because Date is not a reactive dependency {{now}}</p>
+            </div>
         </div>
     </body>
+
     <script>
         Vue.component('todo-item', {
             template: '<li>This is a simple template only component</li>'
@@ -93,17 +127,42 @@
                     { id: 0, text: 'Vegetables' }, 
                     { id: 1, text: 'Cheese' },
                     { id: 2, text: 'Whatever else humans are supposed to eat' }
-                ]
+                ],
+                msg: new Date().toLocaleString(),
+                rawHtml: '<span style="color:red">This should be red</span>',
+                isButtonDisabled: true,
+                val: 55,
+                buttonColor: "color:red",
             },
             methods: {
                 reverseMessage: function () {
                     this.message_2 = this.message_2.split('').reverse().join('')
+                },
+                addItems: function() {
+                    this.items.push("item " + new Date().toLocaleString())
+                    if(this.items.length === 4)
+                        this.too_much = true;
+                },
+                changeTime: function() {
+                    this.msg = new Date().toLocaleString();
+                },
+                changeColor: function() {
+                    this.buttonColor = (this.buttonColor === 'color:red') ?'color:green' : 'color:red';
+                }
+            },
+            computed: {
+                reversedMessage: function() {
+                    return this.message.split('').reverse().join('');
+                },
+                now: function() {
+                    return new Date().toLocaleString()
                 }
             }
         }
         )
 
-        if(this.app2.data.items.length === 4)
-            this.app2.data.too_much = true;
+        // there is nothing to make this code run more than once
+        if(app2.items.length === 4)
+            app2.too_much = true;
     </script>
 </html>
