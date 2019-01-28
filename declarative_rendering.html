@@ -88,9 +88,23 @@
                 <p>Original message: {{ message }}</p>
                 <p>bloated code: {{ message.split('').reverse().join('') }}</p>
                 <p>Computed reversed message: "{{ reversedMessage }}"</p>
-                <h3>computed properties are cached and only reevaluates when a depency changes</h3>
-                <p>Will never change because Date is not a reactive dependency {{now}}</p>
             </div>
+            <ul>
+                <li>
+                    <h3>Computed properties are cached and only reevaluates when a depency changes</h3>
+                    <p>Will never change because Date is not a reactive dependency {{now}}</p>
+                </li>
+                <li>
+                    <h3>Lean Computed Propertis vs Inelegant Watched Properties</h3>
+                    <div>Watched  property: {{fullnameWatched}}</div>
+                    <div>Computed property: {{fullnameComputed}}</div>
+                </li>
+                <li>
+                    <h3>Computed Setter and Getter</h3>
+                    <div>{{firstName_}} {{lastName_}}</div>
+                    <input v-model:text="gotLastName"/>
+                </li>
+        </ul>
         </div>
     </body>
 
@@ -133,6 +147,11 @@
                 isButtonDisabled: true,
                 val: 55,
                 buttonColor: "color:red",
+                firstName: 'Foo',
+                lastName: 'Bar',
+                fullnameWatched: 'Foo Bar',
+                firstName_: 'Eli',
+                lastName_: 'Zoe',
             },
             methods: {
                 reverseMessage: function () {
@@ -156,6 +175,29 @@
                 },
                 now: function() {
                     return new Date().toLocaleString()
+                },
+                fullnameComputed: function() {
+                    return this.firstName + ' ' + this.lastName
+                },
+                gotLastName: {
+                    get: function() {
+                        return this.firstName_ + ' ' + this.lastName_
+                    },
+                    set: function(entry) {
+                        var ar = entry.split(' ');
+                        if(ar.length > 1) {
+                            this.firstName_ = ar[0];
+                            this.lastName_ = ar[ar.length - 1]
+                        }
+                    }
+                }
+            },
+            watch: {
+                firstName: function (val) {
+                    this.fullnameWatched = val + ' ' + this.lastName
+                },
+                lastName: function (val) {
+                    this.fullnameWatched = this.firstName + ' ' + val
                 }
             }
         }
