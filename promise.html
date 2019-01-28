@@ -1,0 +1,58 @@
+<!DOCTYPE html "utf-8">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="./vue.js"></script>
+    </head>
+    <body>
+        <div id="promise_app_demo">
+            <p>{{message}}</p>
+            <button v-on:click="makeAsyncCall">Do Something!</button>
+            <div>Status: {{status}}</div>
+            <div v-if="show">What's happening</div>
+        </div>
+    </body>
+</html>
+<script>
+
+// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
+
+// setTimeout is wrapped into a promise
+// const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+const wait = function(ms) {
+    return new Promise(function(resolve) {
+        return setTimeout(resolve, ms);
+    })
+}
+
+// wait(10000).then(() => saySomething("10 seconds")).catch(failureCallback);
+
+// doSomething is the resolve and is called thru the "then"
+doSomething = function() {
+    app.message = 'The shit just hit the fan';
+    throw new Error('Something failed');
+}
+
+failureProcessing = function() {
+    app.status = 'Caught an exception'
+}
+
+var app = new Vue({
+    el: "#promise_app_demo",
+    data: {
+        message: "Everything is cool but wait until the button is clicked",
+        show: false,
+        status: 'doing nothing',
+    },
+    methods: {
+        makeAsyncCall: function() {
+            this.show = true;
+            this.message = "Making async call"
+            wait(3000).then(doSomething).catch(failureProcessing);
+            this.status = 'Async call is done, waiting for the completion of the call';
+        }
+    }
+
+})
+
+</script>
