@@ -1,0 +1,76 @@
+<!DOCTYPE html "utf-8">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="./vue.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h4>data is a function i=each button has their own object counter</h4>
+            <button-counter></button-counter>
+            <button-counter></button-counter>
+            <button-counter></button-counter>
+
+            <h4>Component containing components</h4>
+            <p>For the the template of the inner control communicates with the outer 
+                component template by emitting
+                events: emit('some-event'). The outer component template listens to it
+                with v-on:some-event="doSomething"
+            </p>
+            <simple-control 
+                v-bind:name="control_name"></simple-control>
+        </div>
+        </body>
+    <script>
+    Vue.component('button-counter', {
+        data: function () {
+                    return {
+                        count: 0
+                    }
+                },
+        methods: {
+            incrementCounter: function() {
+                this.count +=1;
+                this.$emit('counter-change', this.count)
+            }
+        },
+//        template: '<button v-on:click="count++">You clicked me {{ count }} times idependently.</button>',
+        template: '<button v-on:click="incrementCounter">You clicked me {{ count }} times idependently.</button>',
+    });
+
+    Vue.component('simple-control', {
+        props: ['name'],
+        data: function() {
+            return {
+                aka: 'philippe',
+            }
+        },
+        methods: {
+            getCounterValue: function(ev) {
+                this.aka = ev
+            }
+        },
+        template: 
+        '<div>' +
+            '<div>' +
+            '<label>{{name}}: {{aka}}</label>' +
+            '</div>' +
+            '<button-counter v-on:counter-change="getCounterValue($event)" ></button-counter>' +
+        '</div>'
+    })
+
+    var vm = new Vue(
+        {
+            el:"#app",
+            data: {
+                control_name: 'Generic name of the control'
+            },
+            methods: {
+                showCounterValue: function() {
+                    this.control_name = "Counter number: " + $event; 
+                }
+            }
+        }
+    )
+    </script>
+</html>
